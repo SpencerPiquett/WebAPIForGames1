@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page Test Server</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            margin:40px;
+        }
+
+        form{
+            margin:20px;
+        }
+
+        input{
+            margin-right: 8px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1> High Scores </h1>
+
+    <button id="logoutBTN"> Logout </button>
+    <!-- Form for High Scores -->
+
+    <form id = "scoreForm">
+        <input type="text" id = "playername" placeholder="Player name..." required/><br>
+        <input type="number" id = "score" placeholder="Score..." min=0 required/><br>
+        <input type="number" id = "level" placeholder="Level..." min=1 value: 1 required/><br>
+        <!--<input type="text" id = "game" placeholder="Game Name..." value="Demo Game" required/><br>-->
+        <button type="submit">Submit Game Score</button>
+    </form>
+
+    <!-- Status Message -->
+    <p id = "status"></p>
+
+    <!-- List of High Scores -->
+    <ol id="scoreList"></ol>
+
+    <script src="js/fetchscores.js"></script>
+</body>
+</html>

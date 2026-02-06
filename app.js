@@ -1,14 +1,47 @@
 const { timeStamp } = require("console");
 const express = require("express");
 const path = require("path");
+require("dotenv").config();
+const mongoose = require("mongoose");
 const fs = require("fs");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
+
+//Location of Routes
+const authRoutes = require("./routes/auth");
+const highScoreRoutes = require("./routes/gameslist");
 
 //Set up a static folder for files
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 
+
+app.use("/api/auth", authRoutes);
+//Connecting with a router module - Week 3
+app.use("/api/gameslist", highScoreRoutes);
+
+
+//Quick Test that env Variables are available
+if(!MONGO_URI)
+{
+    console.error("Missing Database Connection");
+    process.exit(1);
+}
+
+async function connectToMongo()
+{
+    try 
+    {
+        await mongoose.connect(MONGO_URI);
+        console.log("Connected to Database");
+    } 
+    catch (error) {
+        console.error("MongoDB connection error: ", error.message);
+        process.exit(1);
+    }
+}
 
 //Define a route
 app.get("/", (req, res)=>{
@@ -82,8 +115,34 @@ app.post("/leaderboard", (req, res) => {
     res.status(201).json({ok:true, leaderboard});
 });
 
+//Requests using MongoDB Database and Mongoose
+const gameSchema = new mongoose.Schema({},{strict:false});
+const VideoGameData = mongoose.model("gameprofiles", gameSchema);
+
+app.get("/api/gamesprofile", async (req, res) => {
+    const games = await VideoGameData.find();
+    console.log(games);
+    res.json(games);
+});
+
+app.get("/api/gamesprofile/:game", async (req, res) => {
+    const game = req.params                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             .game;
+    const gameentry = await VideoGameData.findOne({game});
+    console.log(gameentry);
+    res.json(gameentry);
+});
 
 
-app.listen(PORT, ()=>{
+
+//Command that starts the server
+//app.listen(PORT, ()=>{
+//    console.log(`Server is running ${PORT}`);
+//});
+
+//Connection with Database and Server
+connectToMongo().then(()=>
+{
+    app.listen(PORT, ()=>{
     console.log(`Server is running ${PORT}`);
+});
 });
